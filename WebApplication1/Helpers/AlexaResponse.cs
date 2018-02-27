@@ -134,8 +134,8 @@ namespace AlexaRules.Helpers
                     UpdatedIntentAttributes = new AlexaRequest.RequestAttributes.IntentAttributes();
                 }
 
-                //[JsonProperty("type")]
-                //public string Type { get; set; }
+                [JsonProperty("type")]
+                public string Type { get; set; }
 
                 //[JsonProperty("slotToElicit")]
                 //public string SlotToElicit { get; set; }

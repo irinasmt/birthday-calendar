@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using AlexaRules.Helpers;
+using Microsoft.Ajax.Utilities;
 using WebApplication1.Helpers;
 using WebGrease.Css.Ast;
 
@@ -75,9 +77,6 @@ namespace WebApplication1.Controllers
                 case "BirthdayByDateIntent":
                     response = new IntentRequestHandler(request).GetBirthdaysByDate();
                     break;
-                case "BirthdayByPeriodIntent":
-                    response = new IntentRequestHandler(request).GetBirthdaysByPeriod();
-                    break;
                 case "AMAZON.CancelIntent":
                 case "AMAZON.StopIntent":
                     response = CancelOrStopIntentHandler(request);
@@ -126,12 +125,6 @@ namespace WebApplication1.Controllers
 
     }
 
-    public enum PeriodEnum
-    {
-        CominSoon =1,
-        ThreeWeeks=2,
-        TwoWeeks =3
-    }
 
     public class IntentRequestHandler
     {
@@ -145,11 +138,30 @@ namespace WebApplication1.Controllers
         public AlexaResponse GetBirthdaysByDate()
         {
             AlexaResponse response;
-            var startDate = Convert.ToDateTime(_request.SlotsList.First().Value);
-            var calendarService = new CalendarHelper(startDate,startDate,_request.Accesstoken);
-            var result = calendarService.GetBirthdays();
+            DateTime startDate;
+            DateTime endDate;
+            var userInput = _request.SlotsList.First().Value;
+            switch (userInput.Length)
+            {
+                // this is by month
+                case 7:
+                    startDate = Convert.ToDateTime(_request.SlotsList.First().Value);
+                    endDate = startDate.AddMonths(1);
+                    break;
+                // this has the week number
+                case 8:
+                    var tempDate = FirstDateOfWeekISO8601(DateTime.Now.Year, Convert.ToInt32(userInput.Substring(6, 2)));
+                    startDate = Convert.ToDateTime(tempDate);
+                    endDate = startDate.AddDays(7);
+                    break;
+                default:
+                    startDate = Convert.ToDateTime(_request.SlotsList.First().Value);
+                    endDate = startDate;
+                    break;
+            }
 
-            var birthDayResponse = result.Count > 0 ? FormStringFromList(result) : "There are no birthdays in the period that you asked for.";
+            
+            var birthDayResponse = BirthDayResponse(startDate, endDate);
 
             response = CalculateResponse(_request, birthDayResponse);
             response.Response.Card.Content = "";
@@ -157,19 +169,29 @@ namespace WebApplication1.Controllers
             return response;
         }
 
-        public AlexaResponse GetBirthdaysByPeriod()
+        private string BirthDayResponse(DateTime startDate, DateTime endDate)
         {
-            return null;
+            var calendarService = new CalendarHelper(startDate, endDate, _request.Accesstoken);
+            var result = calendarService.GetBirthdays();
+
+            var birthDayResponse = result.Count > 0
+                ? FormStringFromList(result)
+                : "There are no birthdays in the period that you asked for.";
+            return birthDayResponse;
         }
 
         public AlexaResponse CalculateResponse(Request request, string brthdayString)
         {
             AlexaResponse response = new AlexaResponse();
-            response.Response.OutputSpeech.Ssml = "<speak>"+ brthdayString + "</speak>";
+            //response.Session.MemberId = request.MemberId;
+            
+            //response.Response.ShouldEndSession = false;
+            //AlexaResponse.ResponseAttributes.DirectivesAttributes directive = CreateDirectiveWithSlot(request);
+            //response.Response.Directives.Add(directive);
+
+
+            response.Response.OutputSpeech.Ssml = "<speak>" + brthdayString + "</speak>";
             response.Response.OutputSpeech.Type = "SSML";
-            response.Response.ShouldEndSession = false;
-            AlexaResponse.ResponseAttributes.DirectivesAttributes directive = CreateDirectiveWithSlot(request);
-            response.Response.Directives.Add(directive);
 
             return response;
         }
@@ -179,7 +201,7 @@ namespace WebApplication1.Controllers
             string birthdayResponse=""; 
             foreach (var birthday in list)
             {
-                birthdayResponse += "on" + birthday.Value + "is" + birthday.Key;
+                birthdayResponse += "On " + birthday.Value + " is " + birthday.Key;
             }
 
             return birthdayResponse;
@@ -187,10 +209,35 @@ namespace WebApplication1.Controllers
 
         public AlexaResponse.ResponseAttributes.DirectivesAttributes CreateDirectiveWithSlot(Request request)
         {
-            var directive = new AlexaResponse.ResponseAttributes.DirectivesAttributes();
-            directive.UpdatedIntentAttributes.Name = request.Intent;
-            directive.UpdatedIntentAttributes.Slots = request.Slots;
+            var directive = new AlexaResponse.ResponseAttributes.DirectivesAttributes
+            {
+                Type = "Dialog.Delegate",
+                UpdatedIntentAttributes =
+                {
+                    Name = request.Intent,
+                    Slots = request.Slots
+                }
+            };
             return directive;
         }
+
+        public static DateTime FirstDateOfWeekISO8601(int year, int weekOfYear)
+        {
+            DateTime jan1 = new DateTime(year, 1, 1);
+            int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
+
+            DateTime firstThursday = jan1.AddDays(daysOffset);
+            var cal = CultureInfo.CurrentCulture.Calendar;
+            int firstWeek = cal.GetWeekOfYear(firstThursday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+            var weekNum = weekOfYear;
+            if (firstWeek <= 1)
+            {
+                weekNum -= 1;
+            }
+            var result = firstThursday.AddDays(weekNum * 7);
+            return result.AddDays(-3);
+        }
     }
+
 }
