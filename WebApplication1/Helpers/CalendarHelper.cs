@@ -44,24 +44,44 @@ namespace WebApplication1.Helpers
             _request.TimeMax = _endDate;
             _request.ShowDeleted = false;
             _request.SingleEvents = true;
-            _request.MaxResults = 5;
+            _request.MaxResults = 6;
             _request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
         }
 
-        private List<KeyValuePair<string, string>> GetEvents()
+        private Dictionary<string, string> GetEvents()
         {
-            List<KeyValuePair<string, string> >result= new List<KeyValuePair<string, string>>();
+            Dictionary<string, string>result= new Dictionary<string, string>();
             Events events = _request.Execute();
             if (events.Items != null && events.Items.Count > 0)
             {
+                if (events.Items.Count > 5)
+                {
+                    result.Add("5", "In the period that you asked for there are more than five birthdays. Here are the first five.");
+                }
+
+                var count = 1;
                 foreach (var eventItem in events.Items)
                 {
+                    count++;
+                    if (count > 5)
+                    {
+                        break;
+                    }
                     string when = eventItem.Start.DateTime.ToString();
                     if (String.IsNullOrEmpty(when))
                     {
-                        when = eventItem.Start.Date;
+                        when =Convert.ToDateTime(eventItem.Start.Date).DayOfWeek.ToString();
                     }
-                    result.Add(new KeyValuePair<string, string>(eventItem.Summary, when));
+
+                    if (result.ContainsKey(when))
+                    {
+                        result[when] = result[when] +" and "+ eventItem.Summary.Replace("'s","");
+                    }
+                    else
+                    {
+                        result.Add(when, eventItem.Summary.Replace("'s", ""));
+
+                    }
                 }
             }
 
@@ -95,19 +115,18 @@ namespace WebApplication1.Helpers
             return null;
         }
 
-        public List<KeyValuePair<string, string>> GetBirthdays()
+        public Dictionary<string, string> GetBirthdays()
         {
             IntializeService();
-            List<KeyValuePair<string,string> > result = new List<KeyValuePair<string, string>>();
+            Dictionary<string,string> result = new Dictionary<string, string>();
 
             var facebookCalendarId = GetCalendarByString("Friends");
             CreateRequest(facebookCalendarId);
-            result.AddRange(GetEvents());
-
+            
+            result = GetEvents();
             var primaryCalendarId = GetCalendarByString("primary");
             CreateRequest(primaryCalendarId);
-            result.AddRange(GetEvents());
-
+            result = result.Concat(GetEvents()).ToDictionary(x=>x.Key, x=>x.Value);
 
             return result;
         }

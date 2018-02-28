@@ -150,10 +150,12 @@ namespace WebApplication1.Controllers
                     break;
                 // this has the week number
                 case 8:
+                case 4:
                     var tempDate = FirstDateOfWeekISO8601(DateTime.Now.Year, Convert.ToInt32(userInput.Substring(6, 2)));
                     startDate = Convert.ToDateTime(tempDate);
                     endDate = startDate.AddDays(7);
                     break;
+               
                 default:
                     startDate = Convert.ToDateTime(_request.SlotsList.First().Value);
                     endDate = startDate;
@@ -183,12 +185,6 @@ namespace WebApplication1.Controllers
         public AlexaResponse CalculateResponse(Request request, string brthdayString)
         {
             AlexaResponse response = new AlexaResponse();
-            //response.Session.MemberId = request.MemberId;
-            
-            //response.Response.ShouldEndSession = false;
-            //AlexaResponse.ResponseAttributes.DirectivesAttributes directive = CreateDirectiveWithSlot(request);
-            //response.Response.Directives.Add(directive);
-
 
             response.Response.OutputSpeech.Ssml = "<speak>" + brthdayString + "</speak>";
             response.Response.OutputSpeech.Type = "SSML";
@@ -196,15 +192,23 @@ namespace WebApplication1.Controllers
             return response;
         }
 
-        public string FormStringFromList(List<KeyValuePair<string, string>> list)
+        public string FormStringFromList(Dictionary<string, string> list)
         {
-            string birthdayResponse=""; 
+            string birthdayResponse="";
+            if (list.ContainsKey("5"))
+            {
+                birthdayResponse += list["5"];
+            }
             foreach (var birthday in list)
             {
-                birthdayResponse += "On " + birthday.Value + " is " + birthday.Key;
+                if (birthday.Key=="5")
+                {
+                    continue;
+                }
+                birthdayResponse += "<break time=\'1s\'/> On " + birthday.Key + " is " + birthday.Value;
             }
 
-            return birthdayResponse;
+            return "<emphasis level=\"moderate\">" + birthdayResponse+ "</emphasis>";
         }
 
         public AlexaResponse.ResponseAttributes.DirectivesAttributes CreateDirectiveWithSlot(Request request)
