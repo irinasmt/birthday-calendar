@@ -31,8 +31,8 @@ namespace WebApplication1.Controllers
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest));
             }
 
-            string cardTitle = "Birthday Calendar";
-            string skillName = "Birthday Calendar";
+            string cardTitle = "Birthday Book";
+            string skillName = "Birthday Book";
             var alexa = new BaseAlexa( cardTitle, skillName);
             return alexa.Index(alexaRequest);
         }

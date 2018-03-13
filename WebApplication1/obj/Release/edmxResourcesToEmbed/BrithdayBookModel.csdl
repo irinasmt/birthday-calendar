@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BirthdayBookModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="BirthdayBookEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="UserSessionsDetails" EntityType="BirthdayBookModel.UserSessionsDetail" />
+  </EntityContainer>
+  <EntityType Name="UserSessionsDetail">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="MemberId" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
+    <Property Name="DateTime" Type="DateTime" Precision="3" />
+    <Property Name="Intent" Type="String" MaxLength="30" FixedLength="true" Unicode="true" />
+    <Property Name="AppId" Type="String" MaxLength="100" FixedLength="true" Unicode="true" />
+    <Property Name="UserId" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="IsNew" Type="Int32" />
+    <Property Name="RequestType" Type="String" MaxLength="100" FixedLength="true" Unicode="true" />
+    <Property Name="Reason" Type="String" MaxLength="100" FixedLength="true" Unicode="true" />
+    <Property Name="SlotValue" Type="String" MaxLength="200" FixedLength="true" Unicode="true" />
+  </EntityType>
+</Schema>

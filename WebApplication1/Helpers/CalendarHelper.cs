@@ -14,19 +14,21 @@ using WebApplication1.Controllers;
 
 namespace WebApplication1.Helpers
 {
-    public class CalendarHelper
+    public class CalendarHelper:BaseClass
     {
         private EventsResource.ListRequest _request;
         private string _accessToken;
         private CalendarService _service;
         private DateTime _startDate;
         private DateTime _endDate;
+        private string _userId;
 
-        public CalendarHelper(DateTime startDate, DateTime endDate, string accessToken)
+        public CalendarHelper(DateTime startDate, DateTime endDate, string accessToken, string userId)
         {
             _startDate = startDate;
             _endDate = endDate;
             _accessToken = accessToken;
+            _userId = userId;
         }
 
         private void IntializeService()
@@ -48,34 +50,35 @@ namespace WebApplication1.Helpers
             _request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
         }
 
-        private Dictionary<string, string> GetEvents()
+        private Dictionary<string, string> GetEvents(int numberOfBirthdays)
         {
             Dictionary<string, string>result= new Dictionary<string, string>();
             Events events = _request.Execute();
-            if (events.Items != null && events.Items.Count > 0)
+            var birthDaysEvents = events.Items?.Where(x => x.Summary.Contains("birthday")).ToList();
+            if (birthDaysEvents != null && birthDaysEvents.Count > 0)
             {
-                if (events.Items.Count > 5)
+                if (birthDaysEvents.Count > 5)
                 {
-                    result.Add("5", "In the period that you asked for there are more than five birthdays. Here are the first five.");
+                    result.Add("5", "In the period that you asked for, there are more than five birthdays. Here are the first five.");
                 }
 
-                var count = 1;
-                foreach (var eventItem in events.Items)
+                var count = numberOfBirthdays;
+                foreach (var eventItem in birthDaysEvents)
                 {
                     count++;
                     if (count > 5)
                     {
                         break;
                     }
-                    string when = eventItem.Start.DateTime.ToString();
-                    if (String.IsNullOrEmpty(when))
-                    {
-                        when =Convert.ToDateTime(eventItem.Start.Date).DayOfWeek.ToString();
-                    }
+
+                    var when = eventItem.Start.DateTime != null 
+                        ? Convert.ToDateTime(eventItem.Start.DateTime).ToUniversalTime().ToString("dd/MM/yyyy") 
+                        :Convert.ToDateTime(eventItem.Start.Date).ToUniversalTime().ToString("dd/MM/yyyy");
 
                     if (result.ContainsKey(when))
                     {
-                        result[when] = result[when] +" and "+ eventItem.Summary.Replace("'s","");
+                        result[when] = result[when].Replace("birthday", "") + "<s> and </s> " +
+                                       eventItem.Summary.Replace("'s", "");
                     }
                     else
                     {
@@ -118,15 +121,26 @@ namespace WebApplication1.Helpers
         public Dictionary<string, string> GetBirthdays()
         {
             IntializeService();
-            Dictionary<string,string> result = new Dictionary<string, string>();
+            Dictionary<string,string> result= new Dictionary<string, string>();
 
             var facebookCalendarId = GetCalendarByString("Friends");
-            CreateRequest(facebookCalendarId);
-            
-            result = GetEvents();
+            if (facebookCalendarId != null)
+            {
+                CreateRequest(facebookCalendarId);
+                log.Info("The facebook calendar for user " + _userId + "has been found");
+                result = GetEvents(0);
+
+            }
+
+            if (result != null && result.Count == 5)
+            {
+                return result;
+            }
+
             var primaryCalendarId = GetCalendarByString("primary");
+            log.Info("The google calendar for user "+_userId+" has been found");
             CreateRequest(primaryCalendarId);
-            result = result.Concat(GetEvents()).ToDictionary(x=>x.Key, x=>x.Value);
+            result = result?.Concat(GetEvents(result.Count)).ToDictionary(x => x.Key, x => x.Value) ?? GetEvents(0);
 
             return result;
         }

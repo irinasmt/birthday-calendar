@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using AlexaRules;
 
 namespace WebApplication1
 {
@@ -19,6 +20,7 @@ namespace WebApplication1
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+           // config.MessageHandlers.Add(new AlexaValidationHandler());
         }
     }
 }

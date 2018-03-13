@@ -114,6 +114,8 @@ D:\repos\Birthday\WebApplication1\bin\WebApplication1.dll.config
 D:\repos\Birthday\WebApplication1\bin\WebApplication1.dll
 D:\repos\Birthday\WebApplication1\bin\WebApplication1.pdb
 D:\repos\Birthday\WebApplication1\bin\Antlr3.Runtime.dll
+D:\repos\Birthday\WebApplication1\bin\EntityFramework.dll
+D:\repos\Birthday\WebApplication1\bin\EntityFramework.SqlServer.dll
 D:\repos\Birthday\WebApplication1\bin\Google.Apis.Auth.dll
 D:\repos\Birthday\WebApplication1\bin\Google.Apis.Auth.PlatformServices.dll
 D:\repos\Birthday\WebApplication1\bin\Google.Apis.Calendar.v3.dll
@@ -141,6 +143,8 @@ D:\repos\Birthday\WebApplication1\bin\System.Web.WebPages.Deployment.dll
 D:\repos\Birthday\WebApplication1\bin\System.Web.WebPages.dll
 D:\repos\Birthday\WebApplication1\bin\System.Web.WebPages.Razor.dll
 D:\repos\Birthday\WebApplication1\bin\WebGrease.dll
+D:\repos\Birthday\WebApplication1\bin\EntityFramework.xml
+D:\repos\Birthday\WebApplication1\bin\EntityFramework.SqlServer.xml
 D:\repos\Birthday\WebApplication1\bin\Google.Apis.xml
 D:\repos\Birthday\WebApplication1\bin\Google.Apis.Auth.xml
 D:\repos\Birthday\WebApplication1\bin\Google.Apis.Calendar.v3.xml
@@ -165,4 +169,6 @@ D:\repos\Birthday\WebApplication1\bin\Microsoft.AI.WindowsServer.xml
 D:\repos\Birthday\WebApplication1\bin\Microsoft.AI.Web.xml
 D:\repos\Birthday\WebApplication1\obj\Debug\WebApplication1.dll
 D:\repos\Birthday\WebApplication1\obj\Debug\WebApplication1.pdb
+D:\repos\Birthday\WebApplication1\bin\log4net.dll
+D:\repos\Birthday\WebApplication1\bin\log4net.xml
 D:\repos\Birthday\WebApplication1\obj\Debug\BirthdaySkill.csprojResolveAssemblyReference.cache

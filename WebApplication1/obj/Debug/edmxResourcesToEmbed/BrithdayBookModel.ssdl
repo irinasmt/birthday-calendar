@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BirthdayBookModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="UserSessionsDetails">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="MemberId" Type="nchar" MaxLength="50" />
+    <Property Name="DateTime" Type="datetime" />
+    <Property Name="Intent" Type="nchar" MaxLength="30" />
+    <Property Name="AppId" Type="nchar" MaxLength="100" />
+    <Property Name="UserId" Type="nvarchar" MaxLength="500" />
+    <Property Name="IsNew" Type="int" />
+    <Property Name="RequestType" Type="nchar" MaxLength="100" />
+    <Property Name="Reason" Type="nchar" MaxLength="100" />
+    <Property Name="SlotValue" Type="nchar" MaxLength="200" />
+  </EntityType>
+  <EntityContainer Name="BirthdayBookModelStoreContainer">
+    <EntitySet Name="UserSessionsDetails" EntityType="Self.UserSessionsDetails" Schema="dbo" store:Type="Tables" />
+  </EntityContainer>
+</Schema>

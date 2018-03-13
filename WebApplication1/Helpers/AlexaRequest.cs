@@ -17,6 +17,9 @@ namespace WebApplication1.Helpers
         [JsonProperty("request")]
         public RequestAttributes Request { get; set; }
 
+        [JsonProperty("context")]
+        public ContextAttributes Context { get; set; }
+
         [JsonObject("attributes")]
         public class SessionCustomAttributes
         {
@@ -57,7 +60,38 @@ namespace WebApplication1.Helpers
 
                 [JsonProperty("accessToken")]
                 public string AccessToken { get; set; }
+
+                [JsonProperty("permissions")]
+                public PermissionsAttributes Permissions { get; set; }
+
+                [JsonObject("permissions")]
+                public class PermissionsAttributes
+                {
+                    [JsonProperty("consentToken")]
+                    public string ConsentToken { get; set; }
+                }
             }
+        }
+
+        [JsonObject("context")]
+        public class ContextAttributes
+        {
+            [JsonProperty("system")]
+            public SystemAttributes System { get; set; }
+
+            [JsonObject("system")]
+            public class SystemAttributes
+            {
+                [JsonProperty("user")]
+                public SessionAttributes.UserAttributes User { get; set; }
+
+                [JsonProperty("apiEndpoint")]
+                public string ApiEndpoint { get; set; }
+
+                [JsonProperty("apiAccessToken")]
+                public string ApiAccessToken { get; set; }
+            }
+            
         }
 
         [JsonObject("request")]

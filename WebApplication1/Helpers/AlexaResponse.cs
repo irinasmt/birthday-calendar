@@ -108,6 +108,9 @@ namespace AlexaRules.Helpers
                 [JsonProperty("content")]
                 public string Content { get; set; }
 
+                [JsonProperty("permissions")]
+                public dynamic Permissions { get; set; }
+
                 public CardAttributes()
                 {
                     Type = "Simple";
@@ -137,11 +140,12 @@ namespace AlexaRules.Helpers
                 [JsonProperty("type")]
                 public string Type { get; set; }
 
-                //[JsonProperty("slotToElicit")]
-                //public string SlotToElicit { get; set; }
+                [JsonProperty("slotToElicit")]
+                public string SlotToElicit { get; set; }
 
                 [JsonProperty("updatedIntent")]
                 public AlexaRequest.RequestAttributes.IntentAttributes UpdatedIntentAttributes { get; set; }
+                
             }
         }
 
