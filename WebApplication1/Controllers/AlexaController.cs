@@ -20,7 +20,7 @@ namespace WebApplication1.Controllers
 {
     public class AlexaController : ApiController
     {
-        private const string ApplicationID = "amzn1.ask.skill.f23cdce2-a0bb-401d-9b89-5bb1e0ae83d4";
+        
 
         [HttpPost, Route("api/alexa")]
         public dynamic Index(AlexaRequest alexaRequest)
